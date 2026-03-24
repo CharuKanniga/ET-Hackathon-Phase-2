@@ -1,0 +1,951 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Bot, User, Sparkles, Trash2, Clock, ArrowRight, Database, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { matchQuestion } from '../lib/esgMatcher.js';
+
+function AIESGAssistantPage() {
+  const navigate = useNavigate();
+  const [messages, setMessages] = useState([
+    { 
+      id: 1, 
+      type: 'ai', 
+      text: 'Hello! I am your intelligent ESG Assistant. I can help you understand ESG frameworks, calculate carbon footprints, or guide you through compliance requirements. What would you like to know?',
+      timestamp: new Date().toISOString()
+    }
+  ]);
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
+
+  const formatTime = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const handleClearChat = () => {
+    setMessages([
+      { 
+        id: Date.now(), 
+        type: 'ai', 
+        text: 'Chat history cleared. How can I assist you with your ESG goals today?',
+        timestamp: new Date().toISOString()
+      }
+    ]);
+  };
+
+  const handleSend = (e) => {
+    e?.preventDefault();
+    if (!inputValue.trim()) return;
+
+    const userMsg = inputValue.trim();
+    const newMessages = [...messages, { 
+      id: Date.now(), 
+      type: 'user', 
+      text: userMsg,
+      timestamp: new Date().toISOString()
+    }];
+    
+    setMessages(newMessages);
+    setInputValue('');
+    setIsTyping(true);
+
+    // Simulate AI processing time
+    setTimeout(() => {
+      const { match, suggestions } = matchQuestion(userMsg);
+      
+      let aiResponse = {};
+      
+      if (match) {
+        aiResponse = {
+          id: Date.now() + 1,
+          type: 'ai',
+          text: match.answer,
+          actionableSteps: match.actionableSteps,
+          relatedTopics: match.relatedTopics,
+          timestamp: new Date().toISOString()
+        };
+      } else {
+        aiResponse = {
+          id: Date.now() + 1,
+          type: 'ai',
+          text: "I'm not entirely sure about that specific query. My expertise is focused on Environmental, Social, and Governance (ESG) topics, compliance frameworks like BRSR, and sustainability strategies.",
+          fallbackSuggestions: suggestions,
+          timestamp: new Date().toISOString()
+        };
+      }
+
+      setMessages(prev => [...prev, aiResponse]);
+      setIsTyping(false);
+    }, 1200);
+  };
+
+  const handleSuggestionClick = (text) => {
+    setInputValue(text);
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto h-[calc(100vh-6rem)] flex flex-col bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+      {/* Header */}
+      <div className="p-4 border-b border-border bg-muted/30 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center shadow-sm">
+            <Bot className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">ESG Intelligence Agent</h2>
+            <p className="text-xs text-[#2ecc71] flex items-center gap-1 font-medium">
+              <span className="w-2 h-2 rounded-full bg-[#2ecc71] animate-pulse"></span>
+              Online & Ready
+            </p>
+          </div>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={handleClearChat}
+          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+        >
+          <Trash2 className="w-4 h-4 mr-2" />
+          Clear Chat
+        </Button>
+      </div>
+
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-background/50">
+        <AnimatePresence initial={false}>
+          {messages.map((msg) => (
+            <motion.div
+              key={msg.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex gap-4 ${msg.type === 'user' ? 'flex-row-reverse' : ''}`}
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm ${
+                msg.type === 'user' ? 'bg-brand-blue text-white' : 'bg-muted border border-border text-muted-foreground'
+              }`}>
+                {msg.type === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+              </div>
+              
+              <div className={`flex flex-col ${msg.type === 'user' ? 'items-end' : 'items-start'} max-w-[80%]`}>
+                <div className={`rounded-2xl p-4 shadow-sm ${
+                  msg.type === 'user' 
+                    ? 'bg-brand-blue text-white rounded-tr-sm' 
+                    : 'bg-card border border-border text-foreground rounded-tl-sm'
+                }`}>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                  
+                  {/* Actionable Steps (if AI match) */}
+                  {msg.actionableSteps && (
+                    <div className="mt-4 pt-4 border-t border-border/50">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Recommended Actions:</p>
+                      <ul className="space-y-2">
+                        {msg.actionableSteps.map((step, idx) => (
+                          <li key={idx} className="text-sm flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#2ecc71] mt-1.5 flex-shrink-0" />
+                            <span className="text-muted-foreground">{step}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Fallback Suggestions */}
+                  {msg.fallbackSuggestions && (
+                    <div className="mt-4 pt-4 border-t border-border/50">
+                      <p className="text-sm text-muted-foreground mb-2">You might want to ask about:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {msg.fallbackSuggestions.map((sugg, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => handleSuggestionClick(`Tell me about ${sugg}`)}
+                            className="text-xs px-3 py-1.5 rounded-full bg-muted hover:bg-brand-blue hover:text-white transition-colors border border-border"
+                          >
+                            {sugg}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-1 mt-1 text-[10px] text-muted-foreground px-1">
+                  <Clock className="w-3 h-3" />
+                  {formatTime(msg.timestamp)}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+        
+        {isTyping && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex gap-4"
+          >
+            <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center flex-shrink-0">
+              <Bot className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <div className="bg-card border border-border rounded-2xl rounded-tl-sm p-4 flex items-center gap-1 shadow-sm">
+              <span className="w-2 h-2 bg-brand-blue/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+              <span className="w-2 h-2 bg-brand-blue/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+              <span className="w-2 h-2 bg-brand-blue/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+            </div>
+          </motion.div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Next Steps / Quick Actions */}
+      <div className="px-6 py-3 bg-muted/30 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Sparkles className="w-4 h-4 text-[#2ecc71]" />
+          <span>Ready to take action?</span>
+        </div>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => navigate('/data-input')}
+            className="flex-1 sm:flex-none bg-background hover:bg-brand-blue/5 hover:text-brand-blue border-border"
+          >
+            <Database className="w-4 h-4 mr-2" />
+            Input Data
+          </Button>
+          <Button 
+            size="sm" 
+            onClick={() => navigate('/generate-report')}
+            className="flex-1 sm:flex-none bg-brand-blue hover:bg-brand-blue/90 text-white"
+          >
+            <FileText className="w-4 h-4 mr-2" />
+            Generate Report
+          </Button>
+        </div>
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4 bg-background border-t border-border">
+        <form onSubmit={handleSend} className="flex gap-3 max-w-4xl mx-auto">
+          <Input
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Ask about ESG compliance, carbon reduction, or reporting frameworks..."
+            className="flex-1 bg-muted/50 border-border focus-visible:ring-brand-blue h-12 rounded-xl"
+          />
+          <Button 
+            type="submit" 
+            disabled={!inputValue.trim() || isTyping} 
+            className="bg-[#2ecc71] hover:bg-[#27ae60] text-white h-12 px-6 rounded-xl shadow-sm transition-all active:scale-[0.98]"
+          >
+            <Send className="w-5 h-5" />
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default AIESGAssistantPage;
+
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Building2, TrendingUp, Cloud, ShieldCheck, ArrowRight, Trash2, Database, MessageSquare } from 'lucide-react';
+import { useAppContext } from '../context/AppContext.jsx';
+import { Button } from '@/components/ui/button';
+
+function DashboardPage() {
+  const navigate = useNavigate();
+  const { companyData, reportResults, clearData } = useAppContext();
+
+  const stats = [
+    {
+      title: 'Active Profile',
+      value: companyData ? companyData.companyName : 'None',
+      icon: Building2,
+      color: 'text-blue-500',
+      bgColor: 'bg-blue-500/10'
+    },
+    {
+      title: 'Latest ESG Score',
+      value: reportResults ? `${reportResults.esgScore}/100` : '--',
+      icon: TrendingUp,
+      color: 'text-[#2ecc71]',
+      bgColor: 'bg-[#2ecc71]/10'
+    },
+    {
+      title: 'Carbon Emissions',
+      value: reportResults ? `${reportResults.carbonEmission.toFixed(1)} kg` : '--',
+      icon: Cloud,
+      color: 'text-orange-500',
+      bgColor: 'bg-orange-500/10'
+    },
+    {
+      title: 'Compliance Status',
+      value: reportResults ? reportResults.complianceRisk : 'Pending',
+      icon: ShieldCheck,
+      color: reportResults?.complianceRisk === 'Low Risk' ? 'text-[#2ecc71]' : reportResults?.complianceRisk === 'High Risk' ? 'text-red-500' : 'text-gray-500',
+      bgColor: reportResults?.complianceRisk === 'Low Risk' ? 'bg-[#2ecc71]/10' : reportResults?.complianceRisk === 'High Risk' ? 'bg-red-500/10' : 'bg-gray-500/10'
+    }
+  ];
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-brand-blue mb-2">Welcome back, Admin</h1>
+          <p className="text-muted-foreground">Here's an overview of your ESG compliance status.</p>
+        </div>
+        <Button 
+          variant="outline" 
+          onClick={clearData}
+          className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
+        >
+          <Trash2 className="w-4 h-4 mr-2" />
+          Clear Data
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              className="card-panel hover:shadow-md"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bgColor}`}>
+                  <Icon className={`w-6 h-6 ${stat.color}`} />
+                </div>
+                <h3 className="text-sm font-medium text-muted-foreground">{stat.title}</h3>
+              </div>
+              <p className="text-2xl font-bold text-foreground truncate">{stat.value}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+          className="card-panel"
+        >
+          <h3 className="text-lg font-semibold text-brand-blue mb-4">Quick Actions</h3>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate('/data-input')}
+              className="w-full flex items-center justify-between p-4 rounded-lg border border-border hover:border-[#2ecc71]/50 hover:bg-[#2ecc71]/5 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-brand-blue/5 flex items-center justify-center text-brand-blue">
+                  <Database className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-foreground">Input ESG Data</p>
+                  <p className="text-sm text-muted-foreground">Enter new company metrics</p>
+                </div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-[#2ecc71] transition-colors" />
+            </button>
+
+            <button
+              onClick={() => navigate('/ai-assistant')}
+              className="w-full flex items-center justify-between p-4 rounded-lg border border-border hover:border-[#2ecc71]/50 hover:bg-[#2ecc71]/5 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-brand-blue/5 flex items-center justify-center text-brand-blue">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-foreground">Ask AI Assistant</p>
+                  <p className="text-sm text-muted-foreground">Get help with compliance</p>
+                </div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-[#2ecc71] transition-colors" />
+            </button>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.5 }}
+          className="card-panel"
+        >
+          <h3 className="text-lg font-semibold text-brand-blue mb-4">Recent Activity</h3>
+          {companyData ? (
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 mt-2 rounded-full bg-[#2ecc71]"></div>
+                <div>
+                  <p className="text-sm font-medium">Data updated for {companyData.companyName}</p>
+                  <p className="text-xs text-muted-foreground">Just now</p>
+                </div>
+              </div>
+              {reportResults && (
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 mt-2 rounded-full bg-blue-500"></div>
+                  <div>
+                    <p className="text-sm font-medium">Report generated</p>
+                    <p className="text-xs text-muted-foreground">Score: {reportResults.esgScore}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="h-32 flex flex-col items-center justify-center text-muted-foreground">
+              <Cloud className="w-8 h-8 mb-2 opacity-20" />
+              <p className="text-sm">No recent activity</p>
+            </div>
+          )}
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+export default DashboardPage;
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Save, Building, Zap, Droplets, Users, Trash, Fuel } from 'lucide-react';
+import { useAppContext } from '../context/AppContext.jsx';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+function ESGDataInputPage() {
+  const navigate = useNavigate();
+  const { companyData, saveCompanyData } = useAppContext();
+  const [isSaved, setIsSaved] = useState(false);
+
+  const [formData, setFormData] = useState(companyData || {
+    companyName: '',
+    industry: '',
+    electricity: '',
+    fuel: '',
+    water: '',
+    employees: '',
+    waste: ''
+  });
+
+  const handleChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setIsSaved(false);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    saveCompanyData(formData);
+    setIsSaved(true);
+    setTimeout(() => {
+      navigate('/generate-report');
+    }, 1500);
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-brand-blue mb-2">ESG Data Input</h1>
+        <p className="text-muted-foreground">Enter your company's operational metrics to calculate your ESG score and carbon footprint.</p>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="card-panel"
+      >
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Company Info */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2 border-b pb-2">
+              <Building className="w-5 h-5 text-brand-blue" />
+              Company Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Company Name</Label>
+                <Input
+                  id="companyName"
+                  required
+                  value={formData.companyName}
+                  onChange={(e) => handleChange('companyName', e.target.value)}
+                  placeholder="e.g. Acme Corp"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="industry">Industry</Label>
+                <Select 
+                  required 
+                  value={formData.industry} 
+                  onValueChange={(val) => handleChange('industry', val)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Technology">Technology</SelectItem>
+                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                    <SelectItem value="Energy">Energy</SelectItem>
+                    <SelectItem value="Retail">Retail</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          {/* Environmental Metrics */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2 border-b pb-2">
+              <Zap className="w-5 h-5 text-brand-blue" />
+              Environmental Metrics
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="electricity">Electricity Usage (kWh/month)</Label>
+                <div className="relative">
+                  <Zap className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="electricity"
+                    type="number"
+                    required
+                    min="0"
+                    className="pl-9"
+                    value={formData.electricity}
+                    onChange={(e) => handleChange('electricity', e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fuel">Fuel Usage (liters/month)</Label>
+                <div className="relative">
+                  <Fuel className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="fuel"
+                    type="number"
+                    required
+                    min="0"
+                    className="pl-9"
+                    value={formData.fuel}
+                    onChange={(e) => handleChange('fuel', e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="water">Water Usage (cubic meters/month)</Label>
+                <div className="relative">
+                  <Droplets className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="water"
+                    type="number"
+                    required
+                    min="0"
+                    className="pl-9"
+                    value={formData.water}
+                    onChange={(e) => handleChange('water', e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="waste">Waste Produced (kg/month)</Label>
+                <div className="relative">
+                  <Trash className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="waste"
+                    type="number"
+                    required
+                    min="0"
+                    className="pl-9"
+                    value={formData.waste}
+                    onChange={(e) => handleChange('waste', e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Metrics */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2 border-b pb-2">
+              <Users className="w-5 h-5 text-brand-blue" />
+              Social Metrics
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="employees">Number of Employees</Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="employees"
+                    type="number"
+                    required
+                    min="1"
+                    className="pl-9"
+                    value={formData.employees}
+                    onChange={(e) => handleChange('employees', e.target.value)}
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 flex items-center justify-between">
+            {isSaved ? (
+              <p className="text-[#2ecc71] font-medium flex items-center gap-2">
+                <Save className="w-4 h-4" /> Data saved successfully! Redirecting...
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">All fields are required.</p>
+            )}
+            <Button 
+              type="submit" 
+              className="bg-brand-blue hover:bg-brand-blue/90 min-w-[140px]"
+              disabled={isSaved}
+            >
+              {isSaved ? 'Saved' : 'Save Data'}
+            </Button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
+export default ESGDataInputPage;
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FileText, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { useAppContext } from '../context/AppContext.jsx';
+import { Button } from '@/components/ui/button';
+
+function GenerateReportPage() {
+  const navigate = useNavigate();
+  const { companyData, saveReportResults } = useAppContext();
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    if (!companyData) {
+      navigate('/data-input');
+    }
+  }, [companyData, navigate]);
+
+  const handleGenerate = () => {
+    setIsGenerating(true);
+
+    setTimeout(() => {
+      const elec = parseFloat(companyData.electricity) || 0;
+      const fuel = parseFloat(companyData.fuel) || 0;
+      const water = parseFloat(companyData.water) || 0;
+      const waste = parseFloat(companyData.waste) || 0;
+      const emp = parseInt(companyData.employees) || 0;
+
+      // Calculate Score
+      let score = 100;
+      if (elec > 500) score -= 15;
+      if (fuel > 300) score -= 15;
+      if (water > 500) score -= 10;
+      if (waste > 200) score -= 10;
+      if (emp > 50) score += 5;
+      
+      score = Math.max(0, Math.min(100, score));
+
+      // Calculate Emissions
+      const emissions = (elec * 0.5) + (fuel * 0.7);
+
+      // Determine Risk
+      let risk = 'Low Risk';
+      if (score < 50) risk = 'High Risk';
+      else if (score <= 75) risk = 'Medium Risk';
+
+      // Generate Suggestions
+      const suggestions = [];
+      if (elec > 500) suggestions.push('Transition to renewable energy sources to reduce high electricity footprint.');
+      if (fuel > 300) suggestions.push('Consider upgrading fleet to electric vehicles to lower fuel consumption.');
+      if (water > 500) suggestions.push('Implement water recycling and conservation systems in facilities.');
+      if (waste > 200) suggestions.push('Adopt circular economy practices to minimize industrial waste.');
+      if (emp <= 50) suggestions.push('Develop employee engagement programs to boost social governance scores.');
+      
+      if (suggestions.length === 0) {
+        suggestions.push('Maintain current excellent sustainability practices.');
+        suggestions.push('Consider setting net-zero targets for the next decade.');
+      }
+
+      saveReportResults({
+        esgScore: score,
+        carbonEmission: emissions,
+        complianceRisk: risk,
+        suggestions: suggestions.slice(0, 4) // Max 4 suggestions
+      });
+
+      navigate('/results');
+    }, 2000);
+  };
+
+  if (!companyData) return null;
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="mb-8 text-center">
+        <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <FileText className="w-8 h-8 text-brand-blue" />
+        </div>
+        <h1 className="text-brand-blue mb-2">Generate Compliance Report</h1>
+        <p className="text-muted-foreground">Review your data before generating the final ESG analysis.</p>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="card-panel mb-8"
+      >
+        <div className="flex items-center justify-between border-b pb-4 mb-4">
+          <h3 className="text-lg font-semibold">Data Summary</h3>
+          <span className="px-3 py-1 bg-[#2ecc71]/10 text-[#2ecc71] rounded-full text-sm font-medium flex items-center gap-1">
+            <CheckCircle2 className="w-4 h-4" /> Ready
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Company</p>
+            <p className="font-medium">{companyData.companyName}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Industry</p>
+            <p className="font-medium">{companyData.industry}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Employees</p>
+            <p className="font-medium">{companyData.employees}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Electricity</p>
+            <p className="font-medium">{companyData.electricity} kWh</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Fuel</p>
+            <p className="font-medium">{companyData.fuel} L</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Water</p>
+            <p className="font-medium">{companyData.water} m³</p>
+          </div>
+        </div>
+
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg flex items-start gap-3 border border-blue-100">
+          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-blue-800">
+            Our AI engine will analyze these metrics against industry standards and BRSR frameworks to calculate your ESG score and compliance risk.
+          </p>
+        </div>
+      </motion.div>
+
+      <div className="flex justify-center">
+        <Button 
+          size="lg" 
+          onClick={handleGenerate} 
+          disabled={isGenerating}
+          className="bg-[#2ecc71] hover:bg-[#27ae60] text-white min-w-[250px] h-14 text-lg shadow-lg hover:shadow-xl transition-all"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+              Analyzing Data...
+            </>
+          ) : (
+            'Generate Report'
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export default GenerateReportPage;
+
+const HomePage = () => {
+    return (
+        <div>
+        </div>
+    )
+}
+
+export default HomePage;
+
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Download, RefreshCw, ArrowLeft, ShieldAlert, ShieldCheck, Shield, Leaf, Cloud, Lightbulb } from 'lucide-react';
+import { useAppContext } from '../context/AppContext.jsx';
+import { Button } from '@/components/ui/button';
+
+function ResultsPage() {
+  const navigate = useNavigate();
+  const { companyData, reportResults } = useAppContext();
+
+  useEffect(() => {
+    if (!reportResults) {
+      navigate('/dashboard');
+    }
+  }, [reportResults, navigate]);
+
+  if (!reportResults || !companyData) return null;
+
+  const getRiskStyles = (risk) => {
+    switch (risk) {
+      case 'Low Risk': return { color: 'text-[#2ecc71]', bg: 'bg-[#2ecc71]/10', border: 'border-[#2ecc71]/30', icon: ShieldCheck };
+      case 'Medium Risk': return { color: 'text-[#f39c12]', bg: 'bg-[#f39c12]/10', border: 'border-[#f39c12]/30', icon: Shield };
+      case 'High Risk': return { color: 'text-[#e74c3c]', bg: 'bg-[#e74c3c]/10', border: 'border-[#e74c3c]/30', icon: ShieldAlert };
+      default: return { color: 'text-gray-500', bg: 'bg-gray-100', border: 'border-gray-200', icon: Shield };
+    }
+  };
+
+  const riskStyle = getRiskStyles(reportResults.complianceRisk);
+  const RiskIcon = riskStyle.icon;
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-brand-blue mb-2">ESG Compliance Report</h1>
+          <p className="text-muted-foreground">Analysis for {companyData.companyName} • {companyData.industry}</p>
+        </div>
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={() => navigate('/')}>
+            <ArrowLeft className="w-4 h-4 mr-2" /> Dashboard
+          </Button>
+          <Button className="bg-brand-blue hover:bg-brand-blue/90">
+            <Download className="w-4 h-4 mr-2" /> Download PDF
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Main Score Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="card-panel md:col-span-1 flex flex-col items-center justify-center text-center py-10 bg-gradient-to-b from-white to-gray-50"
+        >
+          <div className="w-16 h-16 bg-[#2ecc71]/10 rounded-full flex items-center justify-center mb-4">
+            <Leaf className="w-8 h-8 text-[#2ecc71]" />
+          </div>
+          <h3 className="text-lg font-medium text-muted-foreground mb-2">Overall ESG Score</h3>
+          <div className="text-6xl font-bold text-brand-blue mb-2">
+            {reportResults.esgScore}
+            <span className="text-2xl text-muted-foreground">/100</span>
+          </div>
+          <p className="text-sm text-muted-foreground mt-4 max-w-[200px]">
+            Based on environmental, social, and governance metrics.
+          </p>
+        </motion.div>
+
+        <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Carbon Emissions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="card-panel flex flex-col justify-center"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                <Cloud className="w-5 h-5 text-blue-500" />
+              </div>
+              <h3 className="font-semibold text-foreground">Carbon Footprint</h3>
+            </div>
+            <div className="text-4xl font-bold text-foreground mb-1">
+              {reportResults.carbonEmission.toFixed(1)} <span className="text-xl text-muted-foreground font-medium">kg CO₂e</span>
+            </div>
+            <p className="text-sm text-muted-foreground">Estimated monthly emissions</p>
+          </motion.div>
+
+          {/* Compliance Risk */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className={`card-panel flex flex-col justify-center border-2 ${riskStyle.border} ${riskStyle.bg}`}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center bg-white/50`}>
+                <RiskIcon className={`w-5 h-5 ${riskStyle.color}`} />
+              </div>
+              <h3 className="font-semibold text-foreground">Compliance Risk</h3>
+            </div>
+            <div className={`text-3xl font-bold mb-1 ${riskStyle.color}`}>
+              {reportResults.complianceRisk}
+            </div>
+            <p className="text-sm text-muted-foreground">Regulatory exposure level</p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Suggestions */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="card-panel"
+      >
+        <div className="flex items-center gap-3 mb-6 border-b pb-4">
+          <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+            <Lightbulb className="w-5 h-5 text-yellow-600" />
+          </div>
+          <h3 className="text-xl font-semibold text-brand-blue">Sustainability Action Plan</h3>
+        </div>
+        
+        <ul className="space-y-4">
+          {reportResults.suggestions.map((suggestion, index) => (
+            <li key={index} className="flex items-start gap-4 p-4 rounded-lg bg-muted/30 border border-border hover:border-brand-blue/30 transition-colors">
+              <div className="w-6 h-6 rounded-full bg-brand-blue text-white flex items-center justify-center flex-shrink-0 text-sm font-medium mt-0.5">
+                {index + 1}
+              </div>
+              <p className="text-foreground leading-relaxed">{suggestion}</p>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+
+      <div className="flex justify-center pt-4">
+        <Button 
+          variant="outline" 
+          onClick={() => navigate('/data-input')}
+          className="border-brand-blue text-brand-blue hover:bg-brand-blue hover:text-white"
+        >
+          <RefreshCw className="w-4 h-4 mr-2" /> Generate New Report
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export default ResultsPage;
