@@ -1,0 +1,379 @@
+import React from 'react';
+import { ArrowRight, ArrowDown } from 'lucide-react';
+
+function ArchitectureDiagram() {
+  const Box = ({ children, className = "" }) => (
+    <div className={`bg-[#1a3a52] text-white px-6 py-4 rounded-xl shadow-lg font-medium text-center ${className}`}>
+      {children}
+    </div>
+  );
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Top Row */}
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
+        <Box>User</Box>
+        <ArrowRight className="hidden md:block text-[#2ecc71] w-8 h-8" />
+        <ArrowDown className="md:hidden text-[#2ecc71] w-8 h-8" />
+        <Box>Web Interface</Box>
+        <ArrowRight className="hidden md:block text-[#2ecc71] w-8 h-8" />
+        <ArrowDown className="md:hidden text-[#2ecc71] w-8 h-8" />
+        <Box>AI Agent</Box>
+        <ArrowRight className="hidden md:block text-[#2ecc71] w-8 h-8" />
+        <ArrowDown className="md:hidden text-[#2ecc71] w-8 h-8" />
+        <Box>ESG Policy Database</Box>
+      </div>
+
+      {/* Divider */}
+      <div className="flex items-center justify-center my-8">
+        <ArrowDown className="text-[#2ecc71] w-10 h-10" />
+      </div>
+
+      {/* Processing Layer */}
+      <div className="text-center mb-4">
+        <p className="text-gray-600 font-medium mb-4">AI Agent Processing Pipeline</p>
+      </div>
+
+      {/* Bottom Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <Box className="lg:col-span-1">ESG Scoring Engine</Box>
+        <Box className="lg:col-span-1">Carbon Calculator</Box>
+        <Box className="lg:col-span-1">Compliance Engine</Box>
+        <Box className="lg:col-span-1">Report Generator</Box>
+        <Box className="lg:col-span-1">Output</Box>
+      </div>
+
+      {/* Connecting Lines Description */}
+      <div className="mt-8 text-center">
+        <p className="text-sm text-gray-500 italic">Data flows through the AI agent to specialized engines for comprehensive ESG analysis</p>
+      </div>
+    </div>
+  );
+}
+
+export default ArchitectureDiagram;
+
+import React from 'react';
+import { TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
+
+function ComplianceReportDisplay({ esgScore, carbonEmission, complianceRisk, suggestions }) {
+  const getRiskColor = (risk) => {
+    if (risk === 'Low') return 'text-green-600 bg-green-50 border-green-200';
+    if (risk === 'Medium') return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+    return 'text-red-600 bg-red-50 border-red-200';
+  };
+
+  const getRiskIcon = (risk) => {
+    if (risk === 'Low') return CheckCircle;
+    if (risk === 'Medium') return AlertTriangle;
+    return AlertTriangle;
+  };
+
+  const RiskIcon = getRiskIcon(complianceRisk);
+
+  return (
+    <div className="mt-8 space-y-6">
+      <div className="bg-gradient-to-br from-[#2ecc71]/10 to-[#27ae60]/5 rounded-2xl p-8 border-2 border-[#2ecc71]/20">
+        <h3 className="text-2xl font-bold text-[#1a3a52] mb-6">Compliance Report Generated</h3>
+        
+        {/* ESG Score */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <TrendingUp className="w-6 h-6 text-[#2ecc71]" />
+            <h4 className="text-lg font-semibold text-[#1a3a52]">ESG Score</h4>
+          </div>
+          <p className="text-5xl font-bold text-[#2ecc71]">{esgScore}/100</p>
+        </div>
+
+        {/* Carbon Emission */}
+        <div className="mb-6">
+          <h4 className="text-lg font-semibold text-[#1a3a52] mb-2">Carbon Emission</h4>
+          <p className="text-2xl font-bold text-gray-700">{carbonEmission.toFixed(2)} kg CO₂</p>
+        </div>
+
+        {/* Compliance Risk */}
+        <div className="mb-6">
+          <h4 className="text-lg font-semibold text-[#1a3a52] mb-3">Compliance Risk Level</h4>
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 font-semibold ${getRiskColor(complianceRisk)}`}>
+            <RiskIcon className="w-5 h-5" />
+            {complianceRisk}
+          </div>
+        </div>
+
+        {/* Sustainability Suggestions */}
+        {suggestions.length > 0 && (
+          <div>
+            <h4 className="text-lg font-semibold text-[#1a3a52] mb-3">Sustainability Recommendations</h4>
+            <ul className="space-y-2">
+              {suggestions.map((suggestion, index) => (
+                <li key={index} className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-[#2ecc71] flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-700">{suggestion}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default ComplianceReportDisplay;
+
+import React from 'react';
+import { motion } from 'framer-motion';
+
+function FeatureCard({ icon: Icon, title, description, index }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="bg-white rounded-xl shadow-lg p-6 border-2 border-[#2ecc71]/20 transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:border-[#2ecc71]/40"
+    >
+      <div className="flex flex-col items-start gap-4">
+        <div className="w-14 h-14 bg-[#2ecc71]/10 rounded-xl flex items-center justify-center">
+          <Icon className="w-7 h-7 text-[#2ecc71]" />
+        </div>
+        <div>
+          <h4 className="text-[#1a3a52] font-semibold mb-2">{title}</h4>
+          <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default FeatureCard;
+
+import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+
+function Header() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { name: 'Home', href: '#home' },
+    { name: 'Problem', href: '#problem' },
+    { name: 'Solution', href: '#solution' },
+    { name: 'Architecture', href: '#architecture' },
+    { name: 'Live Demo', href: '#live-demo' },
+    { name: 'Impact', href: '#impact' },
+    { name: 'Contact', href: '#contact' }
+  ];
+
+  const scrollToSection = (e, href) => {
+    e.preventDefault();
+    const element = document.querySelector(href);
+    if (element) {
+      const offset = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+      setIsMobileMenuOpen(false);
+    }
+  };
+
+  return (
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-[#1a3a52] shadow-lg' : 'bg-[#1a3a52]/95'}`}>
+      <nav className="container-custom py-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <a href="#home" onClick={(e) => scrollToSection(e, '#home')} className="text-white text-xl md:text-2xl font-bold tracking-tight">
+            ESG AI Agent
+          </a>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={(e) => scrollToSection(e, link.href)}
+                className="text-white/90 hover:text-white font-medium transition-colors duration-200 relative group"
+              >
+                {link.name}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#2ecc71] transition-all duration-300 group-hover:w-full"></span>
+              </a>
+            ))}
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden text-white p-2 transition-colors duration-200 hover:bg-white/10 rounded-lg"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden mt-4 py-4 border-t border-white/20">
+            <div className="flex flex-col gap-4">
+              {navLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => scrollToSection(e, link.href)}
+                  className="text-white/90 hover:text-white font-medium transition-colors duration-200 py-2"
+                >
+                  {link.name}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </nav>
+    </header>
+  );
+}
+
+export default Header;
+
+import React from 'react';
+import { motion } from 'framer-motion';
+
+function ImpactCard({ metric, index }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#2ecc71] transition-all duration-300 hover:shadow-2xl"
+    >
+      <p className="text-[#1a3a52] font-semibold text-lg leading-relaxed">{metric}</p>
+    </motion.div>
+  );
+}
+
+export default ImpactCard;
+
+import React from 'react';
+import { motion } from 'framer-motion';
+
+function ProblemCard({ icon: Icon, title, description, index }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="bg-white rounded-xl shadow-lg p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+    >
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+          <Icon className="w-6 h-6 text-red-600" />
+        </div>
+        <div className="flex-1">
+          <h4 className="text-[#1a3a52] font-semibold mb-2">{title}</h4>
+          <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default ProblemCard;
+
+import { useLocation } from 'react-router-dom';
+import { useLayoutEffect } from 'react';
+
+const ScrollToTop = () => {
+    const { pathname } = useLocation();
+
+    useLayoutEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, [pathname]);
+
+    return null;
+}
+
+export default ScrollToTop;
+
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { LayoutDashboard, MessageSquare, Database, FileText, PieChart, Leaf } from 'lucide-react';
+
+function Sidebar() {
+  const navItems = [
+    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/ai-assistant', label: 'AI ESG Assistant', icon: MessageSquare },
+    { path: '/data-input', label: 'ESG Data Input', icon: Database },
+    { path: '/generate-report', label: 'Generate Report', icon: FileText },
+    { path: '/results', label: 'Results', icon: PieChart },
+  ];
+
+  return (
+    <aside className="w-64 bg-[#1a3a52] text-white flex flex-col h-full flex-shrink-0 shadow-xl z-10">
+      <div className="p-6 flex items-center gap-3 border-b border-white/10">
+        <div className="w-10 h-10 bg-[#2ecc71] rounded-lg flex items-center justify-center shadow-lg">
+          <Leaf className="w-6 h-6 text-white" />
+        </div>
+        <h1 className="text-xl font-bold tracking-tight">ESG AI Agent</h1>
+      </div>
+
+      <nav className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium ${
+                  isActive
+                    ? 'bg-[#2ecc71]/20 text-[#2ecc71] border border-[#2ecc71]/30'
+                    : 'text-white/70 hover:bg-white/5 hover:text-white'
+                }`
+              }
+            >
+              <Icon className="w-5 h-5" />
+              {item.label}
+            </NavLink>
+          );
+        })}
+      </nav>
+
+      <div className="p-6 border-t border-white/10">
+        <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+          <p className="text-xs text-white/60 uppercase tracking-wider font-semibold mb-1">System Status</p>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#2ecc71] animate-pulse"></div>
+            <span className="text-sm text-white/90">All systems operational</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+export default Sidebar;
+
+import React from 'react';
+
+function TechBadge({ name }) {
+  return (
+    <span className="inline-block bg-[#2ecc71] text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-[#27ae60] hover:shadow-md">
+      {name}
+    </span>
+  );
+}
+
+export default TechBadge;
