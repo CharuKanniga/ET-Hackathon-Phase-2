@@ -1,0 +1,202 @@
+export const knowledgeBase = [
+  {
+    id: "esg_basics",
+    keywords: ["what is esg", "esg meaning", "define esg", "esg basics", "why esg", "importance of esg"],
+    topic: "ESG Basics",
+    answer: "ESG stands for Environmental, Social, and Governance. It is a framework used to assess an organization's business practices and performance on various sustainability and ethical issues. It provides a way to measure the sustainability and societal impact of an investment in a company or business.\n\nImplementing strong ESG practices is crucial for modern businesses. It helps in risk management, attracts investors who prioritize sustainable practices, improves brand reputation, and often leads to better long-term financial performance by identifying operational efficiencies.",
+    relatedTopics: ["compliance_frameworks", "reporting_metrics"],
+    actionableSteps: [
+      "Conduct an initial ESG readiness assessment.",
+      "Identify key stakeholders and their ESG priorities.",
+      "Establish a baseline for current environmental and social metrics."
+    ]
+  },
+  {
+    id: "carbon_footprint",
+    keywords: ["carbon footprint", "carbon emissions", "ghg", "greenhouse gas", "scope 1", "scope 2", "scope 3", "reduce carbon", "net zero"],
+    topic: "Carbon Footprint & Emissions",
+    answer: "A carbon footprint measures the total greenhouse gas (GHG) emissions caused directly and indirectly by an organization. Emissions are categorized into three scopes: Scope 1 (direct emissions from owned sources), Scope 2 (indirect emissions from purchased electricity/heat), and Scope 3 (all other indirect emissions in the value chain).\n\nReducing carbon emissions is a primary goal for environmental sustainability. Strategies include transitioning to renewable energy, optimizing logistics, improving energy efficiency in facilities, and working with suppliers to reduce their emissions (Scope 3).",
+    relatedTopics: ["renewable_energy", "supply_chain"],
+    actionableSteps: [
+      "Calculate your baseline Scope 1 and Scope 2 emissions.",
+      "Set science-based reduction targets (SBTi).",
+      "Transition facility lighting to LED and optimize HVAC systems."
+    ]
+  },
+  {
+    id: "renewable_energy",
+    keywords: ["renewable energy", "solar", "wind", "green energy", "clean energy", "electricity"],
+    topic: "Renewable Energy Transition",
+    answer: "Transitioning to renewable energy involves shifting power consumption from fossil fuels to sustainable sources like solar, wind, hydro, or geothermal. This is one of the most effective ways to reduce Scope 2 carbon emissions and improve your overall environmental score.\n\nCompanies can achieve this by installing on-site renewable generation (like solar panels), purchasing Renewable Energy Certificates (RECs), or entering into Power Purchase Agreements (PPAs) with green energy providers.",
+    relatedTopics: ["carbon_footprint", "esg_basics"],
+    actionableSteps: [
+      "Conduct a feasibility study for on-site solar installation.",
+      "Evaluate local green energy purchasing options from your utility provider.",
+      "Implement smart meters to track and optimize energy usage."
+    ]
+  },
+  {
+    id: "water_conservation",
+    keywords: ["water conservation", "water usage", "water waste", "water management", "save water"],
+    topic: "Water Conservation",
+    answer: "Water conservation in a corporate context involves minimizing water withdrawal, consumption, and discharge. It is a critical environmental metric, especially for companies operating in water-stressed regions.\n\nEffective water management includes implementing closed-loop cooling systems, harvesting rainwater, recycling wastewater for non-potable uses, and installing low-flow fixtures across all facilities.",
+    relatedTopics: ["waste_management", "esg_basics"],
+    actionableSteps: [
+      "Audit current water usage across all facilities.",
+      "Install low-flow fixtures and smart leak detection systems.",
+      "Explore wastewater recycling for industrial processes or landscaping."
+    ]
+  },
+  {
+    id: "waste_management",
+    keywords: ["waste management", "circular economy", "recycling", "zero waste", "reduce waste", "landfill"],
+    topic: "Waste Management & Circular Economy",
+    answer: "Effective waste management focuses on the 'Reduce, Reuse, Recycle' hierarchy. Moving towards a circular economy means designing products and processes that minimize waste and keep materials in use for as long as possible.\n\nCompanies can improve their waste metrics by reducing single-use plastics, implementing comprehensive recycling programs, composting organic waste, and redesigning packaging to be fully recyclable or biodegradable.",
+    relatedTopics: ["water_conservation", "supply_chain"],
+    actionableSteps: [
+      "Conduct a comprehensive waste audit to identify major waste streams.",
+      "Implement a zero-waste-to-landfill policy for major facilities.",
+      "Work with suppliers to reduce packaging waste."
+    ]
+  },
+  {
+    id: "social_labor",
+    keywords: ["labor practices", "employee engagement", "diversity", "inclusion", "dei", "human rights", "fair wages", "social"],
+    topic: "Social: Labor Practices & DEI",
+    answer: "The 'Social' pillar of ESG focuses on how a company manages relationships with its workforce, the societies in which it operates, and the political environment. Key areas include Diversity, Equity, and Inclusion (DEI), fair labor practices, human rights, and employee health and safety.\n\nStrong social practices lead to higher employee retention, better talent acquisition, and reduced risk of labor disputes. It requires transparent policies, equitable pay structures, and active community engagement.",
+    relatedTopics: ["governance_ethics", "esg_basics"],
+    actionableSteps: [
+      "Conduct an annual pay equity audit.",
+      "Implement comprehensive DEI training for all management levels.",
+      "Establish a robust grievance mechanism for employees."
+    ]
+  },
+  {
+    id: "governance_ethics",
+    keywords: ["governance", "ethics", "board diversity", "compliance", "risk management", "anti-corruption", "whistleblower"],
+    topic: "Governance & Ethics",
+    answer: "Governance refers to the set of rules, practices, and processes by which a company is directed and controlled. It involves balancing the interests of a company's many stakeholders, such as shareholders, senior management executives, customers, suppliers, financiers, the government, and the community.\n\nKey governance topics include board diversity, executive compensation, anti-corruption policies, transparent accounting methods, and robust risk management frameworks.",
+    relatedTopics: ["compliance_frameworks", "social_labor"],
+    actionableSteps: [
+      "Review and update the corporate code of ethics.",
+      "Ensure independent representation on the board of directors.",
+      "Implement a secure, anonymous whistleblower hotline."
+    ]
+  },
+  {
+    id: "compliance_frameworks",
+    keywords: ["brsr", "gri", "sasb", "tcfd", "iso 14001", "iso 14064", "frameworks", "reporting standards", "sebi"],
+    topic: "Compliance Frameworks & Standards",
+    answer: "ESG reporting frameworks provide standardized metrics for companies to disclose their sustainability performance. Prominent frameworks include GRI (Global Reporting Initiative), SASB (Sustainability Accounting Standards Board), and TCFD (Task Force on Climate-related Financial Disclosures).\n\nIn India, BRSR (Business Responsibility and Sustainability Report) is mandated by SEBI for top listed companies. ISO standards like 14001 (Environmental Management) and 14064 (GHG Accounting) provide operational guidelines for achieving these metrics.",
+    relatedTopics: ["reporting_metrics", "governance_ethics"],
+    actionableSteps: [
+      "Identify which reporting frameworks are mandated or preferred in your industry/region.",
+      "Map your current data collection processes to framework requirements.",
+      "Consider third-party assurance for your ESG reports."
+    ]
+  },
+  {
+    id: "supply_chain",
+    keywords: ["supply chain", "sustainable sourcing", "procurement", "vendor", "supplier", "value chain"],
+    topic: "Supply Chain Sustainability",
+    answer: "Supply chain sustainability involves integrating environmental and social principles into the journey of products from raw materials to the consumer. This is often where a company's largest environmental (Scope 3 emissions) and social risks lie.\n\nStrategies include implementing a Supplier Code of Conduct, conducting regular supplier audits, sourcing local materials to reduce transport emissions, and prioritizing vendors with strong ESG credentials.",
+    relatedTopics: ["carbon_footprint", "social_labor"],
+    actionableSteps: [
+      "Develop and enforce a comprehensive Supplier Code of Conduct.",
+      "Map your Tier 1 and Tier 2 suppliers to identify high-risk areas.",
+      "Include ESG criteria in the vendor selection and RFP process."
+    ]
+  },
+  {
+    id: "reporting_metrics",
+    keywords: ["generate report", "esg report", "metrics", "kpi", "measure esg", "score", "rating"],
+    topic: "ESG Reporting & Metrics",
+    answer: "ESG reporting is the disclosure of data covering a company's operations in three areas: environmental, social, and corporate governance. It provides a snapshot of the business's impact in these areas for investors, customers, and wider stakeholders.\n\nTo generate an accurate report, you need reliable data collection systems for metrics like energy consumption, water usage, workforce demographics, and safety incidents. Our platform can help you consolidate this data and generate a comprehensive compliance report.",
+    relatedTopics: ["compliance_frameworks", "esg_basics"],
+    actionableSteps: [
+      "Navigate to the 'ESG Data Input' section to enter your current metrics.",
+      "Use the 'Generate Report' feature to calculate your ESG score.",
+      "Review the automated suggestions to improve your rating."
+    ]
+  }
+];
+
+import { knowledgeBase } from './esgKnowledgeBase.js';
+
+/**
+ * Analyzes a user question and matches it to the most relevant ESG knowledge base topic.
+ * @param {string} question - The user's input question.
+ * @returns {Object} - An object containing the match, confidence score, and fallback suggestions.
+ */
+export function matchQuestion(question) {
+  if (!question || typeof question !== 'string') {
+    return { match: null, confidence: 0, suggestions: [] };
+  }
+
+  const normalizedQuestion = question.toLowerCase().trim();
+  let bestMatch = null;
+  let highestScore = 0;
+
+  // Simple tokenization for word matching
+  const questionWords = normalizedQuestion.split(/[\s,.-?]+/).filter(w => w.length > 2);
+
+  for (const entry of knowledgeBase) {
+    let score = 0;
+
+    for (const keyword of entry.keywords) {
+      const normalizedKeyword = keyword.toLowerCase();
+      
+      // Exact phrase match gets highest weight
+      if (normalizedQuestion.includes(normalizedKeyword)) {
+        score += 10 + (normalizedKeyword.split(' ').length * 5);
+      } else {
+        // Partial word match
+        const keywordWords = normalizedKeyword.split(' ');
+        let matchedWords = 0;
+        
+        for (const kw of keywordWords) {
+          if (questionWords.includes(kw)) {
+            matchedWords++;
+          }
+        }
+        
+        if (matchedWords > 0) {
+          score += (matchedWords / keywordWords.length) * 5;
+        }
+      }
+    }
+
+    if (score > highestScore) {
+      highestScore = score;
+      bestMatch = entry;
+    }
+  }
+
+  // Generate fallback suggestions if confidence is low
+  const suggestions = knowledgeBase
+    .map(entry => entry.topic)
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 3);
+
+  // Threshold for a "good" match
+  if (highestScore >= 5) {
+    return { 
+      match: bestMatch, 
+      confidence: highestScore,
+      suggestions: []
+    };
+  }
+
+  return { 
+    match: null, 
+    confidence: highestScore,
+    suggestions 
+  };
+}
+
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs) {
+	return twMerge(clsx(inputs));
+}
